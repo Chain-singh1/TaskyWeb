@@ -98,3 +98,32 @@ const htmlModalContent = ({id, title, description, url}) => {
         })
     );
  };
+
+// Load Initial Data
+const loadInitialData = () => {
+    const localStorageCopy = JSON.parse(localStorage.task);   
+    
+    if(localStorageCopy) state.taskList = localStorageCopy.tasks;
+
+    state.taskList.map((cardDate) => {
+        taskContents.innerAdjacentHTML("beforeend", htmlTaskContent(cardDate));
+    });
+};
+
+// when edit or update -> save it
+const handleSubmit = (event) => {
+    const id = `${Date.now()}`;
+    const input = {
+        url: document.getElementById("imageUrl").value,
+        title: document.getElementById("taskTitle").value,
+        tags: document.getElementById("tags").value,
+        taskDescription: document.getElementById("taskDescription").value,
+    };
+    if(input.title === "" || input.tags === "" || input.taskDescription === ""){
+        return alert("Please fill th neccessary fields");
+    }
+    taskContents.innerAdjacentHTML("beforeend", htmlTaskContent({...input, id}));
+    state.taskList.push({...input, id});
+    updateLocalStorage();
+};
+
