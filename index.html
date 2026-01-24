@@ -20,11 +20,10 @@
     />
   </head>
   <body onload="loadInitialData()">
-    
     <!-- Btn on Small Screen Size -->
     <div class="add__new__btn__mobile__only d-md-none">
       <button
-        class="btn btn-outline-primary d-flex align-items-center gap-3"
+        class="btn btn-primary d-flex align-items-center gap-3"
         type="submit"
         data-bs-toggle="modal"
         data-bs-target="#addNewModal"
@@ -54,6 +53,7 @@
           </div>
           <div class="modal-body">
             <form onsubmit="return false">
+              <!-- img -->
               <div class="mb-3">
                 <label for="imageUrl" class="form-label">Image URL</label>
                 <input
@@ -61,10 +61,10 @@
                   class="form-control"
                   id="imageUrl"
                   aria-describedby="imageDesc"
-                  placeholder="https://abc.com/image.png"
+                  placeholder="https://rohan.com/image.png"
                 />
                 <div id="imageDesc" class="form-text">
-                  Its a optional field
+                  Its a optional filed for you...
                 </div>
               </div>
 
@@ -210,6 +210,7 @@
                 placeholder="Search Your Task Here.."
                 aria-label="Search Task"
                 aria-describedby="addon-wrapping"
+                oninput="searchTask.apply(this, arguments)"
               />
               <span class="input-group-text" id="addon-wrapping">
                 <i class="fas fa-search"></i>
@@ -224,8 +225,6 @@
         <div class="row task__contents"></div>
       </section>
     </div>
-
-
 
     <!-- Scripts -->
     <script src="./index.js"></script>

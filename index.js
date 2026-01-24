@@ -42,29 +42,24 @@ const state = {
 const taskModal = document.querySelector(".task__modal__body");
 const taskContents = document.querySelector(".task__contents");
 
-// console.log(taskContents);
-// console.log(taskModal);
 
-// Template for the card on screen
 const htmlTaskContent = ({ id, title, description, type, url }) => `
   <div class="col-md-6 col-lg-4 mt-3" id=${id} key=${id}>
     <div class='card shadow-sm task__card'>
     
       <div class='card-header d-flex justify-content-end task__card__header'>
-          <button type='button' class='btn btn-outline-primary mr-1.5' name=${id}>
+          <button type='button' class='btn btn-outline-primary mr-2' name=${id} onclick="editTask.apply(this, arguments)">
               <i class='fas fa-pencil-alt name=${id}'></i>
           </button>
-          <button type='button' class='btn btn-outline-danger mr-1.5' name=${id} onclick='deleteTask.apply(this, arguments)'>
-              <i class='fas fa-trash-alt name=${id}'></i>
+           <button type='button' class='btn btn-outline-danger mr-2' name=${id} onclick="deleteTask.apply(this, arguments)">
+              <i class='fas fa-trash-alt name=${id}' ></i>
           </button>
       </div>
       <div class='card-body'>
           ${
-            // url &&
-            // `<img width='100%' src=${url} alt='Card Image' class='card-img-top md-3 rounded-lg' />`
-            url ?
-            `<img width='100%' src=${url} alt='Card Image' class='card-img-top md-3 rounded-lg' />`
-            : `<img width='100%' src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMwAAADACAMAAAB/Pny7AAAA7VBMVEX////x7+Lf3dA7g4JNo6T29vZNTlA/P0ExMTS7vLyenp9AQkL39ejJyL9JSk1gYWNcW1rTpUc4ODojIybU1NDm5dpqaWfU0sZBd3ZMlZf1u1B5eXfw8N/ttk9LpKJOoaVCjo3ToDt7o5ssfHxelI+v0s8+SU3n5+WwsKxUVFOlpaOEhoNtbnAuLDMbHB83NTv06Mrx16Xsw3j0wmnXr2DbtW3Zv4fjypvk17Tz3rTtsj/eu3ru5tXmx37QplCjv7bG1MwAcHKSsai2xrvX6OCRwLp1s7IwlZXC39mntbBlkJFLV1pNhopCamtcfnwLNP4gAAAEfklEQVR4nO3bbVfaSByGcUIQgsSoKVMsxqhA6hMuFNe1bN0SQcBK3e//cXYmEElIQpiekyHp3tcrj8cX/vjPJBM9yeUQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEELRXVQFdCGEsnN5/PGAt6siX1dX7WsBnJ2bUkkralql9F5l+bXnu76UW4WjTkfXFaWdvGZXZ59cqdI+5qn9kaMD5ZZ9AB+Ok7bszC03NcJVvsbT3o2iU80fSY+mWqGWyrVkSFyRPFdkl2GU64Qx5QqbC1H5LLyYfP5YoZhdAZjiJa+FG0MuNV0MZn8vcUx+7+C3wnSEYDRguDFilhkwwAADDDDAAAOMr0hk5jBGt9s11HBPdjDOI/Tjl97d3Z/3f3VDNdnBME63V6/XTw4PD78/hP15IDMY9st37+oLzPl5mCYzGLbGen+7GNrXLGMMqe9YFpjzb4+Bv0RlByNJ/9Q9mMPv3QxPRjJOfJjz4DrLMKYvra6zjGOMrGKkng8TcjnLEsZ/NbvP9tVsfs90MQ+BwazBzP/jkSaM1F9iwm4zkRgyaMmy3LBThZH6J+5x5ttjyFEzAkPOmtQiN58Gqz+w3UeAbu/uhGLuQ8+ZURg2Fqfm6my2iXEOm/0vD18j/qMWjmk0XYz8StKDme+SiCezKMxQXvY0ShEmpjDMwGORmy2SZcyoJfsaZBhjr1jkVnYxNc/mXzQkWcUELXLLTjHGe3BexQyDFv9oUoIxKMKIOWgOnkIs8tkoZRimeLbGFvGD/Bg7bC708txIGYZSxua0MJ1aUiTGDqWwRiQ1GPbbq8/jacHJp/Fi7Fb4YNhoaqnBMMvLpOBmRUymETkYOpoUYVTLNE9dzORZDcMM11iarVpqMOq4QCnm3HJqejRLzGCNhWoGKcHQ7UIJ7mDYhMZkFUNGZ2sx8k87FRj1efI+leW2MfyY6M3vjmaYBoxqm2yNnfowU0v1Ykg1zkI1ZPsYg12RPbvf1bx4MbXXWIt759wmhlCLyeZiBjTqEtOIt9BnTnuLGMPZLtMAw70QOD/iYMJPZIEaZKuTscMd89FMyHwyZLTJXFij7WFUYk1PV/eKt7HKMGS0IWX+zLkdDL27RCyw94VmMUzsRdnTgGwJY0/WU1iWROx1J7LAaGwiGuMckq14Cj3Y2ITHwp45BWOce7sVs8TYKqNHnAmfpdmya6KXmSGNC+t2vjsY6ok5kQU0Q+F7hkzYZSx2NuxSx4s5+7EvFvMy3WC/LOLEyM3XmVCMNTXjp/KrGPnos5hXThwMcQ6WiU1GKMa5u5i/B+ZlYpqbXMiygGkUeJZYqjHF2U96U+eypBvDaUkrplQsFo84Kb+AeasImow2+5T0ZNhgBL3aqL3xajgxR7OOCMyF8zqwNvv3E1fyEU9vn523u2+rCWNy+xXnHXeNr5LOlWPR9aQtuapW4Xy3nxX1av2aOko5cUyu3HY/us3TlQ/cHVwmb6Hbpny9m3zlxDfMoh0BCaIghBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIof9T/wGzlgG5tZp6PAAAAABJRU5ErkJggg==" alt='Card Image' class='card-img-top md-3 rounded-lg' />`
+              url
+              ? `<img width='100%' src=${url} alt='Card Image' class='card-img-top md-3 rounded-lg' />`
+              : `<img width='100%' src="https://tse1.mm.bing.net/th?id=OIP.F00dCf4bXxX0J-qEEf4qIQHaD6&pid=Api&rs=1&c=1&qlt=95&w=223&h=117" alt='Card Image' class='card-img-top md-3 rounded-lg' />`
           }
           <h4 class='card-title task__card__title'>${title}</h4>
           <p class='description trim-3-lines text-muted'>${description}</p>
@@ -73,7 +68,7 @@ const htmlTaskContent = ({ id, title, description, type, url }) => `
           </div>
       </div>
       <div class='card-footer'>
-          <button type='button' class='btn btn-outline-primary float-right' data-bs-toggle="modal" data-bs-target="#showTask" onclick='openTask()' id=${id}>Open Task</button>
+          <button type='button' class='btn btn-outline-primary float-right' data-bs-toggle="modal" data-bs-target="#showTask" onclick='openTask.apply(this, arguments)' id=${id}>Open Task</button>
       </div>
     </div>
   </div>
@@ -85,9 +80,9 @@ const htmlModalContent = ({ id, title, description, url }) => {
   return `
   <div id=${id}>
      ${
-       url ?
-            `<img width='100%' src=${url} alt='Card Image' class='card-img-top md-3 rounded-lg' />`
-            : `<img width='100%' src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMwAAADACAMAAAB/Pny7AAAA7VBMVEX////x7+Lf3dA7g4JNo6T29vZNTlA/P0ExMTS7vLyenp9AQkL39ejJyL9JSk1gYWNcW1rTpUc4ODojIybU1NDm5dpqaWfU0sZBd3ZMlZf1u1B5eXfw8N/ttk9LpKJOoaVCjo3ToDt7o5ssfHxelI+v0s8+SU3n5+WwsKxUVFOlpaOEhoNtbnAuLDMbHB83NTv06Mrx16Xsw3j0wmnXr2DbtW3Zv4fjypvk17Tz3rTtsj/eu3ru5tXmx37QplCjv7bG1MwAcHKSsai2xrvX6OCRwLp1s7IwlZXC39mntbBlkJFLV1pNhopCamtcfnwLNP4gAAAEfklEQVR4nO3bbVfaSByGcUIQgsSoKVMsxqhA6hMuFNe1bN0SQcBK3e//cXYmEElIQpiekyHp3tcrj8cX/vjPJBM9yeUQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEELRXVQFdCGEsnN5/PGAt6siX1dX7WsBnJ2bUkkralql9F5l+bXnu76UW4WjTkfXFaWdvGZXZ59cqdI+5qn9kaMD5ZZ9AB+Ok7bszC03NcJVvsbT3o2iU80fSY+mWqGWyrVkSFyRPFdkl2GU64Qx5QqbC1H5LLyYfP5YoZhdAZjiJa+FG0MuNV0MZn8vcUx+7+C3wnSEYDRguDFilhkwwAADDDDAAAOMr0hk5jBGt9s11HBPdjDOI/Tjl97d3Z/3f3VDNdnBME63V6/XTw4PD78/hP15IDMY9st37+oLzPl5mCYzGLbGen+7GNrXLGMMqe9YFpjzb4+Bv0RlByNJ/9Q9mMPv3QxPRjJOfJjz4DrLMKYvra6zjGOMrGKkng8TcjnLEsZ/NbvP9tVsfs90MQ+BwazBzP/jkSaM1F9iwm4zkRgyaMmy3LBThZH6J+5x5ttjyFEzAkPOmtQiN58Gqz+w3UeAbu/uhGLuQ8+ZURg2Fqfm6my2iXEOm/0vD18j/qMWjmk0XYz8StKDme+SiCezKMxQXvY0ShEmpjDMwGORmy2SZcyoJfsaZBhjr1jkVnYxNc/mXzQkWcUELXLLTjHGe3BexQyDFv9oUoIxKMKIOWgOnkIs8tkoZRimeLbGFvGD/Bg7bC708txIGYZSxua0MJ1aUiTGDqWwRiQ1GPbbq8/jacHJp/Fi7Fb4YNhoaqnBMMvLpOBmRUymETkYOpoUYVTLNE9dzORZDcMM11iarVpqMOq4QCnm3HJqejRLzGCNhWoGKcHQ7UIJ7mDYhMZkFUNGZ2sx8k87FRj1efI+leW2MfyY6M3vjmaYBoxqm2yNnfowU0v1Ykg1zkI1ZPsYg12RPbvf1bx4MbXXWIt759wmhlCLyeZiBjTqEtOIt9BnTnuLGMPZLtMAw70QOD/iYMJPZIEaZKuTscMd89FMyHwyZLTJXFij7WFUYk1PV/eKt7HKMGS0IWX+zLkdDL27RCyw94VmMUzsRdnTgGwJY0/WU1iWROx1J7LAaGwiGuMckq14Cj3Y2ITHwp45BWOce7sVs8TYKqNHnAmfpdmya6KXmSGNC+t2vjsY6ok5kQU0Q+F7hkzYZSx2NuxSx4s5+7EvFvMy3WC/LOLEyM3XmVCMNTXjp/KrGPnos5hXThwMcQ6WiU1GKMa5u5i/B+ZlYpqbXMiygGkUeJZYqjHF2U96U+eypBvDaUkrplQsFo84Kb+AeasImow2+5T0ZNhgBL3aqL3xajgxR7OOCMyF8zqwNvv3E1fyEU9vn523u2+rCWNy+xXnHXeNr5LOlWPR9aQtuapW4Xy3nxX1av2aOko5cUyu3HY/us3TlQ/cHVwmb6Hbpny9m3zlxDfMoh0BCaIghBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIof9T/wGzlgG5tZp6PAAAAABJRU5ErkJggg==" alt='Card Image' class='card-img-top md-3 rounded-lg' />`
+       url
+         ? `<img width='100%' src=${url} alt='Card Image' class='card-img-top md-3 rounded-lg' />`
+         : `<img width='100%' src="https://tse1.mm.bing.net/th?id=OIP.F00dCf4bXxX0J-qEEf4qIQHaD6&pid=Api&rs=1&c=1&qlt=95&w=223&h=117" alt='Card Image' class='card-img-top md-3 rounded-lg' />`
      }
      <strong class='text-muted text-sm'>Created on: ${date.toDateString()}</strong>
      <h2 class='my-3'>${title}</h2>
@@ -116,8 +111,7 @@ const loadInitialData = () => {
   });
 };
 
-
-// when we update or edit -> save
+// when we update or when we edit -> save
 const handleSubmit = (event) => {
   const id = `${Date.now()}`;
   const input = {
@@ -126,10 +120,9 @@ const handleSubmit = (event) => {
     type: document.getElementById("tags").value,
     description: document.getElementById("taskDescription").value,
   };
-  // if (input.title === "" || input.tags === "" || input.taskDescription === "") {
-  //   return alert("Please fill all the necessary fiels :-)");
-  // }
-
+  if (input.title === "" || input.type === "" || input.description === "") {
+    return alert("Please fill all the necessary fiels :-)");
+  }
 
   taskContents.insertAdjacentHTML(
     "beforeend",
@@ -140,46 +133,50 @@ const handleSubmit = (event) => {
   updateLocalStorage();
 };
 
-
+//open task
 const openTask = (e) => {
-  if(!e) e = window.event;
+  if (!e) e = window.event;
 
-  const getTask = state.taskList.find(({id}) => id === e.target.id);
+  const getTask = state.taskList.find(({ id }) => id === e.target.id);
   taskModal.innerHTML = htmlModalContent(getTask);
-}
+};
 
+// delete task
 const deleteTask = (e) => {
-  if(!e) e = window.event;
+  if (!e) e = window.event;
 
   const targetId = e.target.getAttribute("name");
   const type = e.target.tagName;
-  const removeTask = state.taskList.filter(({id}) => id !== targetId);
+  const removeTask = state.taskList.filter(({ id }) => id !== targetId);
   updateLocalStorage();
-  if(type === "BUTTON"){
+
+  if (type === "BUTTON") {
     return e.target.parentNode.parentNode.parentNode.parentNode.removeChild(
       e.target.parentNode.parentNode.parentNode
     );
-  }else if(type === "I"){
-  return e.target.parentNode.parentNode.parentNode.parentNode.parentNode.removeChild(
+  } else if (type === "I") {
+    return e.target.parentNode.parentNode.parentNode.parentNode.parentNode.removeChild(
       e.target.parentNode.parentNode.parentNode.parentNode
     );
   }
-}
+};
 
+// edit task
 const editTask = (e) => {
-  if(!e) e = window.event;
+  if (!e) e = window.event;
 
   const targetId = e.target.id;
   const type = e.target.tagName;
+
   let parentNode;
   let taskTitle;
-  let taskType;
   let taskDescription;
+  let taskType;
   let submitButton;
 
-  if(type === "BUTTON"){
+  if (type === "BUTTON") {
     parentNode = e.target.parentNode.parentNode;
-  }else{
+  } else {
     parentNode = e.target.parentNode.parentNode.parentNode;
   }
 
@@ -189,45 +186,51 @@ const editTask = (e) => {
   submitButton = parentNode.childNodes[5].childNodes[1];
 
   taskTitle.setAttribute("contenteditable", "true");
-  taskType.setAttribute("contenteditable", "true");
   taskDescription.setAttribute("contenteditable", "true");
-  submitButton.setAttribute('onclick', "saveEdit.apply(this, arguments)");
-  
+  taskType.setAttribute("contenteditable", "true");
+
+  submitButton.setAttribute("onclick", "saveEdit.apply(this, arguments)");
   submitButton.removeAttribute("data-bs-toggle");
   submitButton.removeAttribute("data-bs-target");
-
   submitButton.innerHTML = "Save Changes";
-}
+};
 
+// save edit
 const saveEdit = (e) => {
-  if(!e) e =window.event;
+  if (!e) e = window.event;
 
-  const targetId = e.targetId;
-  const parentNode = e.target.parentNode.parnetNode;
-  
-  const taskDescription = parentNode.childNodes[3].childNodes[5];
+  const targetId = e.target.id;
+  const parentNode = e.target.parentNode.parentNode;
+
   const taskTitle = parentNode.childNodes[3].childNodes[3];
+  const taskDescription = parentNode.childNodes[3].childNodes[5];
   const taskType = parentNode.childNodes[3].childNodes[7].childNodes[1];
   const submitButton = parentNode.childNodes[5].childNodes[1];
-  const upadateData = {
+
+  const updateData = {
     taskTitle: taskTitle.innerHTML,
     taskDescription: taskDescription.innerHTML,
     taskType: taskType.innerHTML,
   };
   let stateCopy = state.taskList;
-  stateCopy = stateCopy.map((task) => task.id === targetId ? {
-    id: task.id,
-    title: upadateData.taskTitle,
-    description: upadateData.taskDescription,
-    type: upadateData.taskType,
-    url: task.url,
-  }: task);
+
+  stateCopy = stateCopy.map((task) =>
+    task.id === targetId
+      ? {
+          id: task.id,
+          title: updateData.taskTitle,
+          description: updateData.taskDescription,
+          type: updateData.taskType,
+          url: task.url,
+        }
+      : task
+  );
   state.taskList = stateCopy;
   updateLocalStorage();
 
   taskTitle.setAttribute("contenteditable", "false");
-  taskType.setAttribute("contenteditable", "false");
   taskDescription.setAttribute("contenteditable", "false");
+  taskType.setAttribute("contenteditable", "false");
 
   submitButton.setAttribute("onclick", "openTask.apply(this, arguments)");
   submitButton.setAttribute("data-bs-toggle", "modal");
@@ -235,11 +238,19 @@ const saveEdit = (e) => {
   submitButton.innerHTML = "Open Task";
 };
 
+// search
 const searchTask = (e) => {
-  if(!e) e =window.event;
+  if (!e) e = window.event;
 
-  while (taskContents.firstChild){
+  while (taskContents.firstChild) {
     taskContents.removeChild(taskContents.firstChild);
   }
-  const resultData = state.taskList.filter(({title}) => {title.includes(e.target.value)});
-}
+  const resultData = state.taskList.filter(({ title }) =>
+    title.toLowerCase().includes(e.target.value.toLowerCase())
+  );
+
+  resultData.map(
+    (cardData) =>
+      taskContents.insertAdjacentHTML("beforeend", htmlTaskContent(cardData))
+  );
+};
